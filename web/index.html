@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Water Manager - Daily water intake tracker">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Water Manager">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Water Manager</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      margin: 0;
+      background-color: #F0F7FF;
+    }
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #F0F7FF;
+      z-index: 9999;
+      font-family: Roboto, sans-serif;
+    }
+    #loading-screen .drop {
+      font-size: 48px;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    #loading-screen p {
+      margin-top: 12px;
+      color: #2196F3;
+      font-size: 16px;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <div class="drop">💧</div>
+    <p>Loading Water Manager…</p>
+  </div>
+
+  <script>
+    // ── Web Notification helper exposed to Dart via JS interop ──
+    window._showWebNotification = function(title, body, icon) {
+      if (!('Notification' in window)) return;
+      if (Notification.permission === 'granted') {
+        try {
+          new Notification(title, { body: body, icon: icon });
+        } catch(e) {
+          console.warn('Notification failed:', e);
+        }
+      }
+    };
+
+    // Hide the loading screen once Flutter signals it is ready
+    window.addEventListener('flutter-first-frame', function() {
+      var loading = document.getElementById('loading-screen');
+      if (loading) {
+        loading.style.opacity = '0';
+        loading.style.transition = 'opacity 0.4s ease';
+        setTimeout(function() { loading.remove(); }, 400);
+      }
+    });
+  </script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
