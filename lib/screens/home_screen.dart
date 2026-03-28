@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: [
             const Icon(Icons.water_drop, color: Colors.white),
             const SizedBox(width: 8),
-            Text('+${amountMl}ml added!'),
+            Text('+${amountMl}ml 추가됐어요!'),
           ],
         ),
         backgroundColor: const Color(0xFF2196F3),
@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: [
             Icon(Icons.emoji_events, color: Colors.amber),
             SizedBox(width: 8),
-            Text('Daily goal reached! Great job!'),
+            Text('오늘 목표 달성! 정말 잘했어요! 🎉'),
           ],
         ),
         backgroundColor: Colors.green.shade700,
@@ -129,13 +129,13 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (ctx) {
         final controller = TextEditingController();
         return AlertDialog(
-          title: const Text('Custom Amount'),
+          title: const Text('직접 입력'),
           content: TextField(
             controller: controller,
             autofocus: true,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
-              labelText: 'Amount (ml)',
+              labelText: '섭취량 (ml)',
               suffixText: 'ml',
               border: OutlineInputBorder(),
             ),
@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
+              child: const Text('취소'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen>
                   Navigator.pop(ctx);
                 }
               },
-              child: const Text('Add'),
+              child: const Text('추가'),
             ),
           ],
         );
@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Reminders disabled'),
+            content: Text('알림이 꺼졌어요'),
             behavior: SnackBarBehavior.floating,
             duration: Duration(seconds: 2),
           ),
@@ -184,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen>
           _notificationService.sendTestNotification();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Reminders enabled every 30 minutes'),
+              content: const Text('30분마다 음수 알림이 켜졌어요'),
               backgroundColor: Colors.green.shade700,
               behavior: SnackBarBehavior.floating,
               duration: const Duration(seconds: 2),
@@ -194,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
-                  'Could not enable notifications. Please allow notifications in your browser.'),
+                  '알림을 켤 수 없어요. 브라우저에서 알림 권한을 허용해 주세요.'),
               behavior: SnackBarBehavior.floating,
               duration: Duration(seconds: 3),
             ),
@@ -209,20 +209,20 @@ class _HomeScreenState extends State<HomeScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Reset Today\'s Intake'),
+        title: const Text('오늘 기록 초기화'),
         content: const Text(
-            'Are you sure you want to reset all water entries for today?'),
+            '오늘 섭취한 물 기록을 모두 초기화할까요?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: const Text('취소'),
           ),
           ElevatedButton(
             style:
                 ElevatedButton.styleFrom(backgroundColor: Colors.red.shade400),
             onPressed: () => Navigator.pop(ctx, true),
             child:
-                const Text('Reset', style: TextStyle(color: Colors.white)),
+                const Text('초기화', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -261,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen>
             Icon(Icons.water_drop, size: 24),
             SizedBox(width: 8),
             Text(
-              'Water Manager',
+              '물 마시기',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
           ],
@@ -277,14 +277,14 @@ class _HomeScreenState extends State<HomeScreen>
                       : Icons.notifications_none,
                 ),
                 tooltip: _notificationService.remindersEnabled
-                    ? 'Disable reminders'
-                    : 'Enable reminders',
+                    ? '알림 끄기'
+                    : '알림 켜기',
                 onPressed: _toggleNotifications,
               ),
             ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Reset today',
+            tooltip: '오늘 초기화',
             onPressed: _showResetConfirmDialog,
           ),
         ],
@@ -327,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildDateCard() {
     final now = DateTime.now();
-    final dayFormat = DateFormat('EEEE, MMMM d');
+    final dayFormat = DateFormat('M월 d일 (E)', 'ko');
     return Card(
       color: Colors.white,
       child: Padding(
@@ -365,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen>
         child: Column(
           children: [
             Text(
-              'Daily Progress',
+              '오늘의 목표',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -427,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
             Text(
-              'of ${goal}ml',
+              '목표 ${goal}ml',
               style: const TextStyle(fontSize: 13, color: Colors.grey),
             ),
           ],
@@ -442,19 +442,19 @@ class _HomeScreenState extends State<HomeScreen>
       children: [
         _statChip(
           icon: Icons.check_circle_outline,
-          label: 'Consumed',
+          label: '섭취량',
           value: '${total}ml',
           color: Colors.blue,
         ),
         _statChip(
           icon: Icons.flag_outlined,
-          label: 'Goal',
+          label: '목표',
           value: '${goal}ml',
           color: Colors.purple,
         ),
         _statChip(
           icon: reached ? Icons.done_all : Icons.hourglass_bottom,
-          label: reached ? 'Done!' : 'Remaining',
+          label: reached ? '달성!' : '남은량',
           value: reached ? '🎉' : '${remaining}ml',
           color: reached ? Colors.green : Colors.orange,
         ),
@@ -529,7 +529,7 @@ class _HomeScreenState extends State<HomeScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Quick Add',
+              '빠른 추가',
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -594,7 +594,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: [
             Icon(Icons.add, size: 18),
             SizedBox(height: 4),
-            Text('Custom',
+            Text('직접입력',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
           ],
         ),
@@ -630,7 +630,7 @@ class _HomeScreenState extends State<HomeScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Drink Reminders',
+                        '음수 알림',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -641,8 +641,8 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                       Text(
                         enabled
-                            ? 'Every ${_notificationService.intervalMinutes} min'
-                            : 'Get notified to stay hydrated',
+                            ? '${_notificationService.intervalMinutes}분마다 알림'
+                            : '규칙적으로 물 마시도록 알림을 받아보세요',
                         style: const TextStyle(
                             fontSize: 12, color: Colors.grey),
                       ),
@@ -677,7 +677,7 @@ class _HomeScreenState extends State<HomeScreen>
             Row(
               children: [
                 const Text(
-                  "Today's Log",
+                  '오늘 기록',
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -686,7 +686,7 @@ class _HomeScreenState extends State<HomeScreen>
                 const Spacer(),
                 if (entries.isNotEmpty)
                   Text(
-                    '${entries.length} ${entries.length == 1 ? 'entry' : 'entries'}',
+                    '총 ${entries.length}건',
                     style:
                         const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
@@ -703,7 +703,7 @@ class _HomeScreenState extends State<HomeScreen>
                           size: 40, color: Colors.grey),
                       SizedBox(height: 8),
                       Text(
-                        'No entries yet.\nTap a button above to log water!',
+                        '아직 기록이 없어요.\n위 버튼을 눌러 물 섭취를 기록해보세요!',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.grey, fontSize: 13),
                       ),
@@ -747,7 +747,7 @@ class _HomeScreenState extends State<HomeScreen>
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline,
                           size: 18, color: Colors.redAccent),
-                      tooltip: 'Remove entry',
+                      tooltip: '삭제',
                       onPressed: () =>
                           _waterService.removeEntry(realIndex),
                     ),

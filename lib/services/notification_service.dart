@@ -61,8 +61,8 @@ class NotificationService extends ChangeNotifier {
   void _fireReminder() {
     if (!_remindersEnabled) return;
     platformShowNotification(
-      title: 'Time to Hydrate!',
-      body: "Don't forget to drink some water. Stay healthy!",
+      title: '물 마실 시간이에요! 💧',
+      body: '건강을 위해 물 한 잔 마셔요!',
       icon: '/icons/Icon-192.png',
     );
   }
@@ -70,9 +70,8 @@ class NotificationService extends ChangeNotifier {
   /// Sends a one-off test notification so the user can verify setup.
   void sendTestNotification() {
     platformShowNotification(
-      title: 'Water Manager',
-      body:
-          "Notifications are working! You'll be reminded every $_intervalMinutes minutes.",
+      title: '물 마시기 알림 설정 완료! 💧',
+      body: '${_intervalMinutes}분마다 물 마시도록 알려드릴게요.',
       icon: '/icons/Icon-192.png',
     );
   }
