@@ -20,32 +20,43 @@ class WaterEntry {
 }
 
 class WaterService extends ChangeNotifier {
-  static const int dailyGoalMl = 2000;
+  static const int defaultGoalMl = 2000;
   static const String _keyEntries = 'water_entries';
   static const String _keyLastDate = 'last_date';
+  static const String _keyGoal = 'daily_goal_ml';
 
   List<WaterEntry> _entries = [];
+  int _dailyGoalMl = defaultGoalMl;
   SharedPreferences? _prefs;
   bool _initialized = false;
 
   List<WaterEntry> get entries => List.unmodifiable(_entries);
+  int get dailyGoalMl => _dailyGoalMl;
 
   int get totalIntakeMl => _entries.fold(0, (sum, e) => sum + e.amountMl);
 
   double get progressFraction =>
-      (totalIntakeMl / dailyGoalMl).clamp(0.0, 1.0);
+      (totalIntakeMl / _dailyGoalMl).clamp(0.0, 1.0);
 
-  int get remainingMl => (dailyGoalMl - totalIntakeMl).clamp(0, dailyGoalMl);
+  int get remainingMl => (_dailyGoalMl - totalIntakeMl).clamp(0, _dailyGoalMl);
 
-  bool get goalReached => totalIntakeMl >= dailyGoalMl;
+  bool get goalReached => totalIntakeMl >= _dailyGoalMl;
 
   bool get initialized => _initialized;
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
+    _dailyGoalMl = _prefs!.getInt(_keyGoal) ?? defaultGoalMl;
     await _checkAndResetForNewDay();
     await _loadEntries();
     _initialized = true;
+    notifyListeners();
+  }
+
+  Future<void> setGoal(int goalMl) async {
+    if (goalMl < 100) return;
+    _dailyGoalMl = goalMl;
+    await _prefs!.setInt(_keyGoal, goalMl);
     notifyListeners();
   }
 

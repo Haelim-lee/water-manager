@@ -232,6 +232,54 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  Future<void> _showGoalDialog() async {
+    final controller = TextEditingController(
+      text: (_waterService.dailyGoalMl / 1000).toStringAsFixed(1),
+    );
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('하루 목표량 설정'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(
+            labelText: '목표량 (L)',
+            suffixText: 'L',
+            hintText: '예: 2.0',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('취소'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final val = double.tryParse(controller.text.trim());
+              if (val != null && val >= 0.1 && val <= 10.0) {
+                Navigator.pop(ctx);
+                _waterService.setGoal((val * 1000).round());
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        '목표량이 ${val.toStringAsFixed(1)}L로 변경됐어요!'),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.purple.shade600,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            child: const Text('저장'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _waterService.removeListener(_onWaterChanged);
@@ -267,6 +315,11 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.flag_outlined),
+            tooltip: '목표량 변경',
+            onPressed: _showGoalDialog,
+          ),
           if (notifSupported)
             AnimatedBuilder(
               animation: _notificationService,
@@ -354,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildProgressCard(ColorScheme cs) {
     final total = _waterService.totalIntakeMl;
-    final goal = WaterService.dailyGoalMl;
+    final goal = _waterService.dailyGoalMl;
     final remaining = _waterService.remainingMl;
     final reached = _waterService.goalReached;
 
@@ -364,12 +417,22 @@ class _HomeScreenState extends State<HomeScreen>
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            Text(
-              '오늘의 목표',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: cs.onSurface,
+            GestureDetector(
+              onTap: _showGoalDialog,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '오늘의 목표',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(Icons.edit, size: 16, color: cs.primary),
+                ],
               ),
             ),
             const SizedBox(height: 24),
