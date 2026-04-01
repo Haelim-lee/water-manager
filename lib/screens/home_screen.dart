@@ -233,49 +233,73 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> _showGoalDialog() async {
-    final controller = TextEditingController(
-      text: (_waterService.dailyGoalMl / 1000).toStringAsFixed(1),
-    );
+    double tempGoal = _waterService.dailyGoalMl / 1000.0;
     await showDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('하루 목표량 설정'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
-            labelText: '목표량 (L)',
-            suffixText: 'L',
-            hintText: '예: 2.0',
-            border: OutlineInputBorder(),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('하루 목표량 설정'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('0.5L 단위로 조절하세요',
+                  style: TextStyle(fontSize: 13, color: Colors.grey)),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: tempGoal > 0.5
+                        ? () => setDialogState(() => tempGoal -= 0.5)
+                        : null,
+                    icon: const Icon(Icons.remove_circle_outline),
+                    iconSize: 36,
+                    color: Colors.blue,
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    '${tempGoal.toStringAsFixed(1)} L',
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    onPressed: tempGoal < 10.0
+                        ? () => setDialogState(() => tempGoal += 0.5)
+                        : null,
+                    icon: const Icon(Icons.add_circle_outline),
+                    iconSize: 36,
+                    color: Colors.blue,
+                  ),
+                ],
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('취소'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final val = double.tryParse(controller.text.trim());
-              if (val != null && val >= 0.1 && val <= 10.0) {
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('취소'),
+            ),
+            ElevatedButton(
+              onPressed: () {
                 Navigator.pop(ctx);
-                _waterService.setGoal((val * 1000).round());
+                _waterService.setGoal((tempGoal * 1000).round());
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                        '목표량이 ${val.toStringAsFixed(1)}L로 변경됐어요!'),
+                        '목표량이 ${tempGoal.toStringAsFixed(1)}L로 변경됐어요!'),
                     behavior: SnackBarBehavior.floating,
                     backgroundColor: Colors.purple.shade600,
                     duration: const Duration(seconds: 2),
                   ),
                 );
-              }
-            },
-            child: const Text('저장'),
-          ),
-        ],
+              },
+              child: const Text('저장'),
+            ),
+          ],
+        ),
       ),
     );
   }
